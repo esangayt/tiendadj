@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login con Google</title>
+</head>
+<body>
+<h1>Practica de Login con Google</h1>
+<br>
+<h4>Ingre con Google</h4>
+<button id="btnLogin" onclick="loginRedirectGoogle()">Iniciar Sesión</button>
+</body>
+<script type="module">
+    import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
+
+    import {
+        GoogleAuthProvider,
+        getAuth,
+        signInWithEmailAndPassword,
+        updateProfile,
+        sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+    // TODO: Replace the following with your app's Firebase project configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHAz-YSlUy-QQELSUiAMrVlVHaeCKBVoA",
+        authDomain: "django-a2112.firebaseapp.com",
+        projectId: "django-a2112",
+        storageBucket: "django-a2112.appspot.com",
+        messagingSenderId: "664695908662",
+        appId: "1:664695908662:web:a54ff86a05888422f16b97"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    console.log(app)
+
+    const googleProvider = new GoogleAuthProvider();
+    const auth = getAuth(app);
+
+    async function loginRedirectGoogle() {
+        console.log("loginRedirectGoogle")
+
+        await signInWithEmailAndPassword(auth, 'hrdt_jqjve7@juaxe.com',
+            'adminADMIN123.')
+            .then((userCredential) => {
+                // Signed in
+                console.log(userCredential)
+                var user = userCredential.user;
+                console.log(user)
+
+                //imprime token
+                
+
+                {#updateProfile(auth.currentUser, {#}
+                {#    displayName: "Jane Q. User",#}
+                {#    photoURL: "https://example.com/jane-q-user/profile.jpg"#}
+
+                {#if (user.email_verified === false) {#}
+                sendEmailVerification(auth.currentUser)
+                    .then(() => {
+                        console.log("Correo de verificación enviado!");
+                    })
+                    .catch((error) => {
+                        console.log("Error al enviar el correo de verificación:", error);
+                    });
+                
+                user.getIdToken().then(function (idToken) {
+                    console.log(idToken)
+                });
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                console.log(errorCode)
+                console.log(errorMessage)
+            });
+    }
+
+    window.loginRedirectGoogle = loginRedirectGoogle;
+
+</script>
+</html>
