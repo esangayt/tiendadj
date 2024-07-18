@@ -59,13 +59,13 @@
                 {#    photoURL: "https://example.com/jane-q-user/profile.jpg"#}
 
                 {#if (user.email_verified === false) {#}
-                sendEmailVerification(auth.currentUser)
-                    .then(() => {
-                        console.log("Correo de verificación enviado!");
-                    })
-                    .catch((error) => {
-                        console.log("Error al enviar el correo de verificación:", error);
-                    });
+                {#sendEmailVerification(auth.currentUser)#}
+                {#    .then(() => {#}
+                {#        console.log("Correo de verificación enviado!");#}
+                {#    })#}
+                {#    .catch((error) => {#}
+                {#        console.log("Error al enviar el correo de verificación:", error);#}
+                {#    });#}
                 
                 user.getIdToken().then(function (idToken) {
                     console.log(idToken)

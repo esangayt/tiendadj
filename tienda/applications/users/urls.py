@@ -17,9 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from applications.users.views import LoginView
+from applications.users.views import LoginView, LoginViewBase
 
 urlpatterns = [
-    # path('login/', LoginView.as_view(), name='login'),
+    path('login/', LoginViewBase.as_view(), name='login'),
     path('api/google-login/', LoginView.as_view(), name='google-login')
 ]

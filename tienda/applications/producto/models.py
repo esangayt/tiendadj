@@ -9,10 +9,11 @@ class Colors(models.Model):
     """ Representa color de un producto """
 
     color = models.CharField(
-        'Tag', 
-        max_length=120, 
+        'Tag',
+        max_length=120,
         unique=True
     )
+
     #
 
     class Meta:
@@ -27,7 +28,7 @@ class Product(TimeStampedModel):
     """Modelo que representa a un producto de tienda"""
 
     name = models.CharField(
-        'Nombre', 
+        'Nombre',
         max_length=100
     )
     description = models.TextField(
@@ -35,17 +36,17 @@ class Product(TimeStampedModel):
         blank=True
     )
     man = models.BooleanField(
-        'Para Hombre', 
+        'Para Hombre',
         default=True
-    ) # es solo para mujer 
+    )  # es solo para mujer
     woman = models.BooleanField(
-        'Para Mujer', 
+        'Para Mujer',
         default=True
-    ) # es para varon
+    )  # es para varon
     weight = models.DecimalField(
-        'Peso', 
-        max_digits=5, 
-        decimal_places=2, 
+        'Peso',
+        max_digits=5,
+        decimal_places=2,
         default=1
     )
     price_purchase = models.DecimalField(
@@ -61,11 +62,11 @@ class Product(TimeStampedModel):
     main_image = models.ImageField(
         'imagen principal',
         upload_to='producto',
-    ) # imagen principal del producto
-    image1 = models.ImageField('Imagen 1', blank=True, null=True)
-    image2 = models.ImageField('Imagen 2', blank=True, null=True)
-    image3 = models.ImageField('Imagen 3', blank=True, null=True)
-    image4 = models.ImageField('Imagen 4', blank=True, null=True)
+    )  # imagen principal del producto
+    image1 = models.ImageField('Imagen 1', upload_to='producto', blank=True, null=True)
+    image2 = models.ImageField('Imagen 2', upload_to='producto', blank=True, null=True)
+    image3 = models.ImageField('Imagen 3', upload_to='producto', blank=True, null=True)
+    image4 = models.ImageField('Imagen 4', upload_to='producto', blank=True, null=True)
     colors = models.ManyToManyField(Colors)
     video = models.URLField('unboxin', blank=True, null=True)
     stok = models.PositiveIntegerField('Stok', default=0)
