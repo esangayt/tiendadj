@@ -16,8 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from applications.producto.views import ListProductUserAPI
+from applications.producto.views import (
+    ListProductUserAPI, ListProductPorGeneroAPI, FiltrarProductos
+)
 
 urlpatterns = [
-    path('', ListProductUserAPI.as_view(), name='list_product_user')
+    path('', ListProductUserAPI.as_view(), name='list_product_user'),
+    path('filter/<gender>',ListProductPorGeneroAPI.as_view(), name='list_product_by_filter'),
+    path('filter/', FiltrarProductos.as_view(), name='filter_product'),
+
+
 ]
