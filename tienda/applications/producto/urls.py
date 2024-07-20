@@ -16,9 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from applications.producto.views import ListProductUserAPI
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('applications.home.urls')),
-    path('api/products', include('applications.producto.urls')),
-    path('', include('applications.users.urls'))
+    path('', ListProductUserAPI.as_view(), name='list_product_user')
 ]
