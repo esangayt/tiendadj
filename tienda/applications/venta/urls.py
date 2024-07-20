@@ -16,10 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from applications.venta.views import SalesReport
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('applications.home.urls')),
-    path('api/products/', include('applications.producto.urls')),
-    path('api/sales/', include('applications.venta.urls')),
-    path('', include('applications.users.urls'))
+    path('', SalesReport.as_view(), name='reporte-ventas'),
+
 ]
