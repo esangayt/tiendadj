@@ -35,7 +35,7 @@ class ReportSalesSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_structure():
-        return  [
+        return [
             'id',
             'date_sale',
             'amount',
@@ -49,3 +49,15 @@ class ReportSalesSerializer(serializers.ModelSerializer):
             'user',
             'detalle_venta'
         ]
+
+
+class ProductoDetailSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    count = serializers.IntegerField()
+
+
+class ProcesoVentaSerializer(serializers.Serializer):
+    type_invoce = serializers.CharField()
+    type_payment = serializers.CharField()
+    adreese_send = serializers.CharField()
+    products = ProductoDetailSerializer(many=True)

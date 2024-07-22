@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from applications.venta.views import SalesReport
+from applications.venta.views import SalesReport, RegistrarVentaAPI
 
 urlpatterns = [
     path('', SalesReport.as_view(), name='reporte-ventas'),
+    path('venta/create/', RegistrarVentaAPI.as_view(), name='registrar-venta'),
 
 ]
