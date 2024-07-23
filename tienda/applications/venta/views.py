@@ -73,3 +73,54 @@ class RegistrarVentaAPI(CreateAPIView):
         return Response({
             'message': 'Venta Registra'
         })
+
+class RegistrarVentaAPI2(CreateAPIView):
+    serializer_class = ProcesoVentaSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    # def get_queryset(self):
+    #     return Sale.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = ProcesoVentaSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        amount = 0
+        count = 0
+
+        venta = Sale.objects.create(
+            date_sale=timezone.now(),
+            amount=0,
+            count=0,
+            type_invoce=serializer.validated_data['type_invoce'],
+            type_payment=serializer.validated_data['type_payment'],
+            adreese_send=serializer.validated_data['adreese_send'],
+            user=self.request.user
+        )
+
+        productos = Product.objects.filter(id__in= serializer.validated_data['products'])
+        cantidades = serializer.validated_data['cantidades']
+
+        ventas_detalle = []
+        for producto, cantidad in zip(productos,cantidades):
+            venta_detalle = SaleDetail(
+                sale= venta,
+                product=producto,
+                count=cantidad,
+                price_purchase=producto.price_purchase,
+                price_sale=producto.price_sale
+            )
+
+            ventas_detalle.append(venta_detalle)
+            amount += producto.price_sale * producto['count']
+            count += producto['count']
+
+        venta.amount = amount
+        venta.count = count
+        venta.save()
+
+        SaleDetail.objects.bulk_create(ventas_detalle)
+
+        return Response({
+            'message': 'Venta Registra'
+        })

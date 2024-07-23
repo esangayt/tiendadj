@@ -61,3 +61,20 @@ class ProcesoVentaSerializer(serializers.Serializer):
     type_payment = serializers.CharField()
     adreese_send = serializers.CharField()
     products = ProductoDetailSerializer(many=True)
+
+
+### new way to add sale
+class ArrayIntegerListSerializer(serializers.ListField):
+    child = serializers.IntegerField()
+
+
+class ProcesoVentaSerializer2(serializers.Serializer):
+    type_invoce = serializers.CharField()
+    type_payment = serializers.CharField()
+    adreese_send = serializers.CharField()
+    products = serializers.ListField(
+        child=serializers.IntegerField()
+    )
+    cantidades = serializers.ListField(
+        child=serializers.IntegerField()
+    )

@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from applications.venta.views import SalesReport, RegistrarVentaAPI
+from applications.venta.views import SalesReport, RegistrarVentaAPI, RegistrarVentaAPI2
 
 urlpatterns = [
     path('', SalesReport.as_view(), name='reporte-ventas'),
     path('venta/create/', RegistrarVentaAPI.as_view(), name='registrar-venta'),
+    path('venta/new-create/', RegistrarVentaAPI2.as_view(), name='registrar-venta'),
 
 ]
