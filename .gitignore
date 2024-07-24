@@ -126,3 +126,4 @@ dmypy.json
 **/applications/*/migrations/
 .idea
 /**/django-key.json
+/tienda/producto

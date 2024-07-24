@@ -31,3 +31,4 @@ STATICFILES_DIRS = [BASE_DIR.child('static')]
 
 cred = credentials.Certificate('django-key.json')
 default_app = firebase_admin.initialize_app(cred)
+

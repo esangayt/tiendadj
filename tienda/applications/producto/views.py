@@ -1,17 +1,11 @@
-from django.shortcuts import render
 from rest_framework.authentication import TokenAuthentication
-
-# Create your views here.
 from rest_framework.generics import (
     ListAPIView,
-    RetrieveUpdateDestroyAPIView
 )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-
 from applications.producto.models import Product
 from applications.producto.serializer import ProductSerializer
-from applications.users.models import User
 
 
 class ListProductUserAPI(ListAPIView):
