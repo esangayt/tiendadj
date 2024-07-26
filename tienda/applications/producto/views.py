@@ -10,10 +10,10 @@ from applications.producto.serializer import ProductSerializer
 
 class ListProductUserAPI(ListAPIView):
     serializer_class = ProductSerializer
-    #solo caraga la vista si el token es valido
-    #lanza errores si no esta autenticado
+    # solo caraga la vista si el token es valido
+    # lanza errores si no esta autenticado
     permission_classes = (IsAuthenticated, IsAdminUser)
-    #identifica y auhtentica al usuario
+    # identifica y auhtentica al usuario
     authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
@@ -30,6 +30,7 @@ class ListProductPorGeneroAPI(ListAPIView):
     def handle_exception(self, exc):
         # Personaliza la respuesta de error en formato JSON
         return Response({"error": str(exc)}, status=400)
+
     def get_queryset(self):
         genero = self.kwargs['gender']
         return Product.objects.productos_por_genero(genero)

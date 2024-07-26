@@ -1,9 +1,11 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
+from applications.producto.ManagerResponse import ResponseManager
 from applications.producto.models import Product
 from applications.venta.models import Sale, SaleDetail
 from applications.venta.serializer import ReportSalesSerializer, ProcesoVentaSerializer
@@ -12,8 +14,41 @@ from applications.venta.serializer import ReportSalesSerializer, ProcesoVentaSer
 class VentasViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = ReportSalesSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication] #clase general que solo identifica al usuario
+
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        #add atytribute test = false in response at begin of response
+        response = super(VentasViewSet, self).finalize_response(request, response, *args, **kwargs)
+        response.data = {
+            'test': False,
+            'data': response.data
+        }
+
+        response_manager = ResponseManager(request)
+
+        # Cualquier lógica personalizada aquí, por ejemplo, manejo de errores
+        if response.status_code >= 400:
+            return response_manager.catch(response.data)
+
+        # Respuesta estándar
+        content = response.data if response.status_code < 400 else None
+        message = response.data.get("detail", "") if response.status_code >= 400 else ""
+        res = response_manager.response(content, response.status_code, message)
+        response.data = {
+            'test': False,
+            'data': res.data
+        }
+        return  response
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list' or self.action == 'retrieve':
+            permission_classes = [AllowAny]
+        else: # create, update, partial_update, destroy
+            permission_classes = [IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
 
     def list(self, request, *args, **kwargs):
         queryset = Sale.objects.all()
@@ -64,6 +99,10 @@ class VentasViewSet(viewsets.ModelViewSet):
         })
 
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
+        print(kwargs['pk'])
+
+        instance = get_object_or_404(Sale, pk=kwargs['pk'])
         serializer = ReportSalesSerializer(instance)
         return Response(serializer.data)
+
+
