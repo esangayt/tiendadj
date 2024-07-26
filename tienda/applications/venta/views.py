@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from applications.producto.models import Product
 from applications.venta.models import Sale, SaleDetail
 from applications.venta.serializer import (
-    ReportSalesSerializer, ProcesoVentaSerializer
+    ReportSalesSerializer, ProcesoVentaSerializer, ProcesoVentaSerializer2
 )
 
 
@@ -75,7 +75,7 @@ class RegistrarVentaAPI(CreateAPIView):
         })
 
 class RegistrarVentaAPI2(CreateAPIView):
-    serializer_class = ProcesoVentaSerializer
+    serializer_class = ProcesoVentaSerializer2
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -99,7 +99,7 @@ class RegistrarVentaAPI2(CreateAPIView):
         )
 
         productos = Product.objects.filter(id__in= serializer.validated_data['products'])
-        cantidades = serializer.validated_data['cantidades']
+        cantidades = serializer.validated_data['cantidades'] or []
 
         ventas_detalle = []
         for producto, cantidad in zip(productos,cantidades):

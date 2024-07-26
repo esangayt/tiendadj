@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/products/', include('applications.producto.urls')),
     path('api/sales/', include('applications.venta.urls')),
     path('set/', include('applications.producto.routers')),
+    path('set/', include('applications.venta.routers')),
     path('', include('applications.users.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 

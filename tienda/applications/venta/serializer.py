@@ -67,14 +67,9 @@ class ProcesoVentaSerializer(serializers.Serializer):
 class ArrayIntegerListSerializer(serializers.ListField):
     child = serializers.IntegerField()
 
-
 class ProcesoVentaSerializer2(serializers.Serializer):
-    type_invoce = serializers.CharField()
-    type_payment = serializers.CharField()
+    type_invoce = serializers.IntegerField()
+    type_payment = serializers.IntegerField()
     adreese_send = serializers.CharField()
-    products = serializers.ListField(
-        child=serializers.IntegerField()
-    )
-    cantidades = serializers.ListField(
-        child=serializers.IntegerField()
-    )
+    products = ArrayIntegerListSerializer()
+    cantidades = ArrayIntegerListSerializer()
