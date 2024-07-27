@@ -1,7 +1,12 @@
-from django.core.exceptions import ValidationError
+# from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import ValidationError
+
+# ValidationError
 from django.http import JsonResponse, Http404
 from django.conf import settings
 from rest_framework import status
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 
@@ -14,8 +19,9 @@ class ResponseManager:
 
     def response(self, content, status_code, message=None):
         response_data = self.normalize_content(content, status_code, message)
-        return Response(response_data, status=status_code, headers=self.headers)
+        response = Response(data=response_data, status=status_code, headers=self.headers)
 
+        return response
     def register_auth(self, auth):
         self.auth.update(auth)
 
@@ -54,26 +60,30 @@ class ResponseManager:
             message = "Not Found"
         elif isinstance(exception, ValidationError):
             status_code = status.HTTP_400_BAD_REQUEST
-            message = exception.message
+            message = str(exception.detail)
             content = "exception.detail"
+        elif isinstance(exception, ObjectDoesNotExist):
+        # else:
+            status_code = status.HTTP_404_NOT_FOUND
+            message = "Object Not Found"
 
         if settings.DEBUG:
             self.debug = {
                 "type": type(exception).__name__,
-                "message": str(exception),
-                "args": exception.args,
+                # "message": str(exception['detail']),
+                "args": exception,
             }
 
         return self.response(content, status_code, message)
 
-        def stored(self, content, message=None):
+    def stored(self, content, message=None):
             return self.response(content, status.HTTP_201_CREATED, message)
 
-        def updated(self, content, message=None):
+    def updated(self, content, message=None):
             return self.response(content, status.HTTP_202_ACCEPTED, message)
 
-        def destroyed(self, content, message=None):
+    def destroyed(self, content, message=None):
             return self.updated(content, message)
 
-        def ok(self, content=None):
+    def ok(self, content=None):
             return self.response(content, status.HTTP_200_OK)
