@@ -8,6 +8,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.views import set_rollback
 
 
 class ResponseManager:
@@ -87,3 +88,4 @@ class ResponseManager:
 
     def ok(self, content=None):
             return self.response(content, status.HTTP_200_OK)
+

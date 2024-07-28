@@ -1,52 +1,18 @@
-from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
 
-# from applications.producto.ManagerResponse import ResponseManager
 from applications.producto.models import Product
 from applications.producto.serializer import PaginationSerializer
 from applications.venta.models import Sale, SaleDetail
 from applications.venta.serializer import ReportSalesSerializer, ProcesoVentaSerializer
 
-class CustomJSONRenderer(JSONRenderer):
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        response = renderer_context.get('response')
-        response_status = response.status_code if response else 200
-
-        response_data = {
-            "error": not 200 <= response_status < 300,
-            # 'message': response.status_text,
-            'message': data.get('message', ''),
-            "code": response.status_code,
-            'data': data if 200 <= response_status < 300 else None
-        }
-
-        if response_status >= 400 and settings.DEBUG:
-            response_data.update({
-                'debug' : data['debug']
-            })
-
-        #pagination
-        # if 'count' in data and 'results' in data:
-        #     # print('entro')
-        #     response_data.update({
-        #         'count': data['count'],
-        #         "next": data['next'],
-        #         "previous": data['previous'],
-        #         'data': data['results'],
-        #     })
-
-        return super().render(response_data, accepted_media_type, renderer_context)
-
 class VentasViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = ReportSalesSerializer
-    renderer_classes = (CustomJSONRenderer,)
+    # renderer_classes = (CustomJSONRenderer,)
     # parser_classes  = [ResponseManager]
     # permission_classes = [IsAuthenticated]
     pagination_class = PaginationSerializer

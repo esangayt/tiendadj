@@ -20,6 +20,15 @@ DATABASES = {
         'PORT': '5431',
     }
 }
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'utils.ManagerResponse.custom_exception_handler',
+    'DEFAULT_RENDERER_CLASSES': [
+        'utils.CustomJSONRenderer.CustomJSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
