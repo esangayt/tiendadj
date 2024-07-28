@@ -1,20 +1,55 @@
+from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
-from applications.producto.ManagerResponse import ResponseManager
+# from applications.producto.ManagerResponse import ResponseManager
 from applications.producto.models import Product
+from applications.producto.serializer import PaginationSerializer
 from applications.venta.models import Sale, SaleDetail
 from applications.venta.serializer import ReportSalesSerializer, ProcesoVentaSerializer
 
+class CustomJSONRenderer(JSONRenderer):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        response = renderer_context.get('response')
+        response_status = response.status_code if response else 200
+
+        response_data = {
+            "error": not 200 <= response_status < 300,
+            # 'message': response.status_text,
+            'message': data.get('message', ''),
+            "code": response.status_code,
+            'data': data if 200 <= response_status < 300 else None
+        }
+
+        if response_status >= 400 and settings.DEBUG:
+            response_data.update({
+                'debug' : data['debug']
+            })
+
+        #pagination
+        # if 'count' in data and 'results' in data:
+        #     # print('entro')
+        #     response_data.update({
+        #         'count': data['count'],
+        #         "next": data['next'],
+        #         "previous": data['previous'],
+        #         'data': data['results'],
+        #     })
+
+        return super().render(response_data, accepted_media_type, renderer_context)
 
 class VentasViewSet(viewsets.ModelViewSet):
     queryset = Sale.objects.all()
     serializer_class = ReportSalesSerializer
+    renderer_classes = (CustomJSONRenderer,)
+    # parser_classes  = [ResponseManager]
     # permission_classes = [IsAuthenticated]
+    pagination_class = PaginationSerializer
     authentication_classes = [TokenAuthentication]  # clase general que solo identifica al usuario
 
     def handle_exception(self, exc):
@@ -101,74 +136,9 @@ class VentasViewSet(viewsets.ModelViewSet):
             'message': 'Venta Registra'
         })
 
-    def retrieve(self, request, *args, **kwargs):
-        print(kwargs['pk'])
-
-        instance = get_object_or_404(Sale, pk=kwargs['pk'])
-        serializer = ReportSalesSerializer(instance)
-        return Response(serializer.data)
-
-    def exception_handler(exc, context):
-        """
-        Returns the response that should be used for any given exception.
-
-        By default we handle the REST framework `APIException`, and also
-        Django's built-in `Http404` and `PermissionDenied` exceptions.
-
-        Any unhandled exceptions may return `None`, which will cause a 500 error
-        to be raised.
-        """
-        if isinstance(exc, Http404):
-            exc = exceptions.NotFound(*(exc.args))
-        elif isinstance(exc, PermissionDenied):
-            exc = exceptions.PermissionDenied(*(exc.args))
-
-        if isinstance(exc, exceptions.APIException):
-            headers = {}
-            if getattr(exc, 'auth_header', None):
-                headers['WWW-Authenticate'] = exc.auth_header
-            if getattr(exc, 'wait', None):
-                headers['Retry-After'] = '%d' % exc.wait
-
-            if isinstance(exc.detail, (list, dict)):
-                print("ahora estoy")
-                data = exc.detail
-            else:
-                print("ahora no")
-                data = {'detail': exc.detail}
-
-            # print(exc.detail.get('type_invoce')[0])
-            # print(exc.get_full_details())
-            # print(exc.get_codes())
-            # print(exc.with_traceback())
-            # print(traceback.print_exc())
-            # print(traceback.format_stack()
-            # print(sys.exception())
-            # print(traceback.format_list())
-            # print(traceback.extract_stack(exc))
-            # print(traceback.format_per())
-
-            # exc_type, exc_value, exc_tb = exc.__class__, exc, exc.__traceback__
-            trace_list = traceback.format_exception(sys.exception(), limit=None, chain=True)
-            # print(traceback.format_exception_only(sys.exception()))
-            print(exc.get_full_details())
-
-            schema = {
-                "error": 200 >= exc.status_code < 300,
-                "message": exc.get_full_details(),
-                "code": exc.status_code,
-                "data": None,
-            }
-
-            if settings.DEBUG:
-                schema["debug"] = {
-                    "type": type(exc).__name__,
-                    "details": traceback.format_exception_only(sys.exception()),
-                    # "args": exc.args,
-                    # "traceback": traceback.format_per(),
-                    "traceback": trace_list,
-                }
-            set_rollback()
-            return Response(schema, status=exc.status_code, headers=headers)
-
-        return None
+    # def retrieve(self, request, *args, **kwargs):
+    #     print(kwargs['pk'])
+    #
+    #     instance = get_object_or_404(Sale, pk=kwargs['pk'])
+    #     serializer = ReportSalesSerializer(instance)
+    #     return Response(serializer.data)
